@@ -29,6 +29,9 @@ const (
 	EventNameWindowCmdMove                     = "window.cmd.move"
 	EventNameWindowCmdResize                   = "window.cmd.resize"
 	EventNameWindowCmdSetBounds                = "window.cmd.set.bounds"
+	EventNameWindowCmdSetResizeble             = "window.cmd.set.resizeble"
+	EventNameWindowCmdSetMinWidthHeight        = "window.cmd.set.minwidthheight"
+	EventNameWindowCmdSetMaxWidthHeight        = "window.cmd.set.maxwidthheight"
 	EventNameWindowCmdRestore                  = "window.cmd.restore"
 	EventNameWindowCmdShow                     = "window.cmd.show"
 	EventNameWindowCmdUnmaximize               = "window.cmd.unmaximize"
@@ -450,6 +453,44 @@ func (w *Window) Resize(width, height int) (err error) {
 	w.o.Width = astikit.IntPtr(width)
 	w.m.Unlock()
 	_, err = synchronousEvent(w.ctx, w, w.w, Event{Name: EventNameWindowCmdResize, TargetID: w.id, WindowOptions: &WindowOptions{Height: astikit.IntPtr(height), Width: astikit.IntPtr(width)}}, EventNameWindowEventResize)
+	return
+}
+
+// reset minHeight minWidth of the window
+func (w *Window) SetMinWidthHeight(width, height int) (err error) {
+	if err = w.ctx.Err(); err != nil {
+		return
+	}
+	w.m.Lock()
+	w.o.MinHeight = astikit.IntPtr(height)
+	w.o.MinWidth = astikit.IntPtr(width)
+	w.m.Unlock()
+	_, err = synchronousEvent(w.ctx, w, w.w, Event{Name: EventNameWindowCmdSetMinWidthHeight, TargetID: w.id, WindowOptions: &WindowOptions{Height: astikit.IntPtr(height), Width: astikit.IntPtr(width)}}, EventNameWindowCmdSetMinWidthHeight)
+	return
+}
+
+// reset minHeight minWidth of the window
+func (w *Window) SetMaxWidthHeight(width, height int) (err error) {
+	if err = w.ctx.Err(); err != nil {
+		return
+	}
+	w.m.Lock()
+	w.o.MaxHeight = astikit.IntPtr(height)
+	w.o.MaxWidth = astikit.IntPtr(width)
+	w.m.Unlock()
+	_, err = synchronousEvent(w.ctx, w, w.w, Event{Name: EventNameWindowCmdSetMaxWidthHeight, TargetID: w.id, WindowOptions: &WindowOptions{Height: astikit.IntPtr(height), Width: astikit.IntPtr(width)}}, EventNameWindowCmdSetMaxWidthHeight)
+	return
+}
+
+// SetResizeble of the window
+func (w *Window) SetResizeble(resizeble bool) (err error) {
+	if err = w.ctx.Err(); err != nil {
+		return
+	}
+	w.m.Lock()
+	w.o.Resizable = astikit.BoolPtr(resizeble)
+	w.m.Unlock()
+	_, err = synchronousEvent(w.ctx, w, w.w, Event{Name: EventNameWindowCmdSetResizeble, TargetID: w.id, Resizeble: &resizeble}, EventNameWindowCmdSetResizeble)
 	return
 }
 
